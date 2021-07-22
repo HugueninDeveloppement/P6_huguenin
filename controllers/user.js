@@ -1,8 +1,17 @@
+require('dotenv').config();
+
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 exports.signup = (req, res, next) => {
+    const passwordlength = req.body.password.length;
+    console.log(passwordlength);
+    if(passwordlength < 7){
+      return res.status(401).json({
+        message :'mot de passe trop court, 7 caracteres requis'
+      });
+    }else{
     bcrypt.hash( req.body.password , 10)
     .then(hash => {
         const user = new User({
@@ -19,7 +28,7 @@ exports.signup = (req, res, next) => {
           ).catch(
             (error) => {
               res.status(400).json({
-                error: error
+                message : 'utilisateur deja existant'
               });
             }
           )})
@@ -29,6 +38,7 @@ exports.signup = (req, res, next) => {
             error: error
             });
         })
+      }
 };
 
 exports.login = (req, res, next) => {
@@ -48,8 +58,8 @@ exports.login = (req, res, next) => {
               }
               const token = jwt.sign(
                 { userId: user._id },
-                'RANDOM_TOKEN_SECRET',
-                { expiresIn: '24h' });
+                process.env.AUTH_KEY,
+                { expiresIn: process.env.AUTH_TIME});
               res.status(200).json({
                 userId: user._id,
                 token: token

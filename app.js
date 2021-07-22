@@ -1,5 +1,3 @@
-require('dotenv').config();
-
 //on appelle le framework express
 const express = require('express');
 
@@ -12,7 +10,7 @@ const path = require('path');
 app.use(express.json());
 
 //on lance la connection avec mongodb
-require('./models/dbConfig');
+require('./lib/dbConfig');
 
 //on declare nos routes 
 const userRoutes = require('./routes/user');
