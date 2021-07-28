@@ -1,8 +1,8 @@
 {
   "ExpandedNodes": [
     "",
-    "\\backend"
+    "\\controllers"
   ],
-  "SelectedNode": "\\backend\\.gitignore",
+  "SelectedNode": "\\controllers\\sauce.js",
   "PreviewInSolutionExplorer": false
 }

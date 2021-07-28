@@ -1,12 +1,15 @@
 require('dotenv').config();
 
 const User = require('../models/user');
+const CryptoJS = require('crypto-js');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const {encrypt,decrypt} = require('../middleware/crypto');
 
 exports.signup = (req, res, next) => {
     const passwordlength = req.body.password.length;
-    console.log(passwordlength);
+    const emailCrypted = CryptoJS.HmacSHA256(req.body.email, `${process.env.AUTH_CRYPTO_KEY}`).toString();
+    
     if(passwordlength < 7){
       return res.status(401).json({
         message :'mot de passe trop court, 7 caracteres requis'
@@ -15,7 +18,7 @@ exports.signup = (req, res, next) => {
     bcrypt.hash( req.body.password , 10)
     .then(hash => {
         const user = new User({
-            email: req.body.email,
+            email: emailCrypted,
             password: hash
         });
         user.save()
@@ -42,7 +45,11 @@ exports.signup = (req, res, next) => {
 };
 
 exports.login = (req, res, next) => {
-    User.findOne({ email: req.body.email }).then(
+
+  const emailCrypted = CryptoJS.HmacSHA256(req.body.email, `${process.env.AUTH_CRYPTO_KEY}`).toString();;
+  console.log(emailCrypted);
+
+    User.findOne({ email: emailCrypted }).then(
         (user) => {
           if (!user) {
             return res.status(401).json({
